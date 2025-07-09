@@ -1,9 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Shield, Users } from 'lucide-react';
+import { AuthModal } from '@/components/AuthModal';
 
 export const Hero = () => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   return (
     <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
       <div className="absolute inset-0 bg-black/20"></div>
@@ -18,7 +21,11 @@ export const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold px-8 py-4 text-lg"
+              onClick={() => setShowAuthModal(true)}
+            >
               Começar a Investir
             </Button>
             <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg">
@@ -53,6 +60,8 @@ export const Hero = () => {
           </div>
         </div>
       </div>
+
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </section>
   );
 };
