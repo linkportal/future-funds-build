@@ -1,4 +1,5 @@
 # Welcome to your Lovable project
+aqui github 09,07 as 5,51h
 
 ## Project info
 
