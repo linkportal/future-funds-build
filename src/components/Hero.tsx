@@ -1,21 +1,26 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Shield, Users } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export const Hero = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleStartInvesting = () => {
     if (user) {
-      // User is logged in, redirect to dashboard or projects
-      console.log('User is logged in, redirect to dashboard');
+      navigate('/dashboard');
     } else {
-      // User is not logged in, show auth modal
       setShowAuthModal(true);
     }
+  };
+
+  const handleLearnMore = () => {
+    navigate('/projects');
   };
 
   return (
@@ -39,8 +44,13 @@ export const Hero = () => {
             >
               {user ? 'Ir para Dashboard' : 'Começar a Investir'}
             </Button>
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg">
-              Saiba Mais
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg"
+              onClick={handleLearnMore}
+            >
+              Ver Projetos
             </Button>
           </div>
 
