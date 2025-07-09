@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/components/ui/use-toast';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface AuthModalProps {
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,11 +24,84 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     confirmPassword: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { signIn, signUp } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementar lógica de autenticação com Supabase
     console.log('Form submitted:', formData);
-    onClose();
+    
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login
+        const { error } = await signIn(formData.email, formData.password);
+        
+        if (error) {
+          console.error('Login error:', error);
+          toast({
+            title: "Erro no login",
+            description: error.message === 'Invalid login credentials' 
+              ? "Email ou senha incorretos" 
+              : error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Login realizado com sucesso!",
+            description: "Bem-vindo de volta!",
+          });
+          onClose();
+        }
+      } else {
+        // Signup
+        if (formData.password !== formData.confirmPassword) {
+          toast({
+            title: "Erro",
+            description: "As senhas não coincidem",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          toast({
+            title: "Erro",
+            description: "A senha deve ter pelo menos 6 caracteres",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { error } = await signUp(formData.email, formData.password, formData.name);
+        
+        if (error) {
+          console.error('Signup error:', error);
+          toast({
+            title: "Erro no cadastro",
+            description: error.message === 'User already registered' 
+              ? "Este email já está cadastrado" 
+              : error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Conta criada com sucesso!",
+            description: "Verifique seu email para confirmar sua conta.",
+          });
+          onClose();
+        }
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -117,8 +193,12 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             </div>
           )}
 
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-            {isLogin ? 'Entrar' : 'Criar Conta'}
+          <Button 
+            type="submit" 
+            className="w-full bg-blue-600 hover:bg-blue-700" 
+            disabled={loading}
+          >
+            {loading ? 'Processando...' : (isLogin ? 'Entrar' : 'Criar Conta')}
           </Button>
 
           <div className="text-center">

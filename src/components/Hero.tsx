@@ -1,11 +1,22 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Shield, Users } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Hero = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user } = useAuth();
+
+  const handleStartInvesting = () => {
+    if (user) {
+      // User is logged in, redirect to dashboard or projects
+      console.log('User is logged in, redirect to dashboard');
+    } else {
+      // User is not logged in, show auth modal
+      setShowAuthModal(true);
+    }
+  };
 
   return (
     <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
@@ -24,9 +35,9 @@ export const Hero = () => {
             <Button 
               size="lg" 
               className="bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-semibold px-8 py-4 text-lg"
-              onClick={() => setShowAuthModal(true)}
+              onClick={handleStartInvesting}
             >
-              Começar a Investir
+              {user ? 'Ir para Dashboard' : 'Começar a Investir'}
             </Button>
             <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg">
               Saiba Mais
